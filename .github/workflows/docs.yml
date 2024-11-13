@@ -49,6 +49,10 @@ jobs:
           sed -i 's/im age 15/|image15|/g' docs/source/README.rst
           sed -i 's/im age 18/|image18|/g' docs/source/README.rst
           sed -i 's/im age 21/|image21|/g' docs/source/README.rst
+    
+    - name: build docs
+      run: |
+        sphinx-build -W -b html docs/source docs/build -j auto
 
     - name: deploy docs only if it is pushed to main
       uses: peaceiris/actions-gh-pages@v3
