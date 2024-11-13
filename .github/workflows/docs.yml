@@ -35,11 +35,10 @@ jobs:
             
           done
 
-    - name: convert md to rst # md reference is not recognized with md_include
+    - name: Convert README.md to README.rst with filter
       uses: docker://pandoc/core:latest
       with:
-        args: --from=markdown --to=rst --output=docs/source/README.rst README.md
-
+        args: --from=markdown --to=rst --filter=pdf_filter.lua --output=docs/source/README.rst README.md
     - name: build docs
       run: |
         sphinx-build -W -b html docs/source docs/build -j auto
