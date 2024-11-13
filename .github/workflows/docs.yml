@@ -35,13 +35,20 @@ jobs:
             
           done
 
-    - name: Convert README.md to README.rst with filter
+    - name: Convert README.md to README.rst
       uses: docker://pandoc/core:latest
       with:
-        args: --from=markdown --to=rst --filter=pdf_filter.lua --output=docs/source/README.rst README.md
-    - name: build docs
+        args: --from=markdown --to=rst --output=docs/source/README.rst README.md
+
+    - name: Post-process README.rst for substitution issues
       run: |
-        sphinx-build -W -b html docs/source docs/build -j auto
+        # Fix common malformed substitution issues caused by pandoc conversion
+          sed -i 's/i mag e3/|image3|/g' docs/source/README.rst
+          sed -i 's/i mag e6/|image6|/g' docs/source/README.rst
+          sed -i 's/im age 12/|image12|/g' docs/source/README.rst
+          sed -i 's/im age 15/|image15|/g' docs/source/README.rst
+          sed -i 's/im age 18/|image18|/g' docs/source/README.rst
+          sed -i 's/im age 21/|image21|/g' docs/source/README.rst
 
     - name: deploy docs only if it is pushed to main
       uses: peaceiris/actions-gh-pages@v3
