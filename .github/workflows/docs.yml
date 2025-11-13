@@ -30,26 +30,58 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install Decktape
+    - name: Prepare output dir
       run: |
-        npm i -g decktape
+        mkdir -p docs/source/_static
 
-    - name: Convert upstream static slides to PDF via Decktape
-      run: |
-        for i in 1 2 3 4 5 6 7; do \
-          echo "Converting lecture${i}..."; \
-          decktape reveal \
-            --load-pause 2000 \
-            --url-load-timeout 60000 \
-            --page-load-timeout 60000 \
-            --buffer-timeout 60000 \
-            --chrome-arg=--no-sandbox \
-            --chrome-arg=--force-color-profile=srgb \
-            --chrome-arg=--disable-web-security \
-            "https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf" \
-            "docs/source/_static/lecture${i}.slides.pdf" \
-            || exit 1; \
-        done
+    - name: Convert upstream lecture 1 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture1.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture1.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 2 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture2.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture2.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 3 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture3.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture3.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 4 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture4.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture4.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 5 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture5.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture5.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 6 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture6.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture6.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+
+    - name: Convert upstream lecture 7 to PDF (print view)
+      uses: fifsky/html-to-pdf-action@master
+      with:
+        htmlFile: https://mmoelle1.github.io/OospCpp/_static/lecture7.slides.html?print-pdf
+        outputFile: ./docs/source/_static/lecture7.slides.pdf
+        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
 
     - name: Bundle all PDFs into a zip
       run: |
