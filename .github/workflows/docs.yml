@@ -40,22 +40,28 @@ jobs:
 
     - name: Render upstream print slides to PDFs (Puppeteer)
       run: |
-        node - <<'NODE'
-        const fs = require('fs');
-        const puppeteer = require('puppeteer');
-        (async () => {
-          fs.mkdirSync('docs/source/_static', { recursive: true });
-          const browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox','--disable-setuid-sandbox','--force-color-profile=srgb','--disable-web-security']
-          });
+        node --input-type=module - <<'NODE'
+        import fs from 'node:fs';
+        import puppeteer from 'puppeteer';
+
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        fs.mkdirSync('docs/source/_static', { recursive: true });
+        const browser = await puppeteer.launch({
+          headless: 'new',
+          args: ['--no-sandbox','--disable-setuid-sandbox','--force-color-profile=srgb','--disable-web-security']
+        });
+
+        try {
           for (let i = 1; i <= 7; i++) {
             const url = `https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf`;
             const out = `docs/source/_static/lecture${i}.slides.pdf`;
             const page = await browser.newPage();
-            await page.goto(url, { waitUntil: 'networkidle0', timeout: 90000 });
-            await page.waitForTimeout(2000);
-            await page.emulateMediaType('screen');
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: 120000 });
+            // Ensure Reveal content is present
+            await page.waitForSelector('.reveal .slides section', { timeout: 15000 }).catch(() => {});
+            // Small stabilization delay
+            await sleep(1500);
             await page.pdf({
               path: out,
               landscape: true,
@@ -66,8 +72,9 @@ jobs:
             await page.close();
             console.log('Saved', out);
           }
+        } finally {
           await browser.close();
-        })().catch(e => { console.error(e); process.exit(1); });
+        }
         NODE
 
     - name: Bundle all PDFs into a zip
