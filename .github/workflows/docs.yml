@@ -23,12 +23,34 @@ jobs:
       run: |
         jupyter nbconvert --to slides --embed-images --template custom_reveal --TemplateExporter.extra_template_basedirs=./docs/ --output-dir docs/source/_static "notebooks/*.ipynb"
 
-    - name: convert slides to pdf
-      uses: fifsky/html-to-pdf-action@master
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        htmlFile: ./docs/source/_static/lecture1.slides.html
-        outputFile: ./docs/source/_static/lecture1.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+        node-version: '18'
+
+    - name: Install Decktape
+      run: |
+        npm i -g decktape
+
+    - name: Serve slides locally (HTTP)
+      run: |
+        python3 -m http.server 9000 --directory docs/source/_static >/dev/null 2>&1 &
+        sleep 2
+
+    - name: Convert slides to PDF via Decktape
+      env:
+        DECKTAPE_TIMEOUT: '60000'
+      run: |
+        for i in 1 2 3 4 5 6 7; do \
+          echo "Converting lecture${i}..."; \
+          decktape --timeout=$DECKTAPE_TIMEOUT --load-pause 2000 \
+            reveal \
+            http://localhost:9000/lecture${i}.slides.html?print-pdf \
+            docs/source/_static/lecture${i}.slides.pdf \
+            --chrome-arg=--no-sandbox \
+            --chrome-arg=--force-color-profile=srgb \
+            --chrome-arg=--disable-web-security || exit 1; \
+        done
 
     - name: convert md to rst # md reference is not recognized with md_include
       uses: docker://pandoc/core:latest
