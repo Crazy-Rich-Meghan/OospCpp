@@ -100,7 +100,8 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
 
     # Only upstream repo deploys Pages; forks won't publish gh-pages
-    - name: build docs
+    - name: build docs (upstream main only)
+      if: ${{ github.repository_owner == 'mmoelle1' && github.ref == 'refs/heads/main' }}
       run: |
         sphinx-build -W -b html docs/source docs/build -j auto
 
