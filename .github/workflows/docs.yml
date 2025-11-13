@@ -35,18 +35,20 @@ jobs:
         npm i -g decktape
 
     - name: Convert upstream static slides to PDF via Decktape
-      env:
-        DECKTAPE_TIMEOUT: '60000'
       run: |
         for i in 1 2 3 4 5 6 7; do \
           echo "Converting lecture${i}..."; \
-          decktape --timeout=$DECKTAPE_TIMEOUT --load-pause 2000 \
-            reveal \
-            https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf \
-            docs/source/_static/lecture${i}.slides.pdf \
+          decktape reveal \
+            --load-pause 2000 \
+            --url-load-timeout 60000 \
+            --page-load-timeout 60000 \
+            --buffer-timeout 60000 \
             --chrome-arg=--no-sandbox \
             --chrome-arg=--force-color-profile=srgb \
-            --chrome-arg=--disable-web-security || exit 1; \
+            --chrome-arg=--disable-web-security \
+            "https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf" \
+            "docs/source/_static/lecture${i}.slides.pdf" \
+            || exit 1; \
         done
 
     - name: Bundle all PDFs into a zip
