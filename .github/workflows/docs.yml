@@ -7,6 +7,8 @@ jobs:
   build_docs:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v3
@@ -32,12 +34,7 @@ jobs:
       run: |
         npm i -g decktape
 
-    - name: Serve slides locally (HTTP)
-      run: |
-        python3 -m http.server 9000 --directory docs/source/_static >/dev/null 2>&1 &
-        sleep 2
-
-    - name: Convert slides to PDF via Decktape
+    - name: Convert upstream static slides to PDF via Decktape
       env:
         DECKTAPE_TIMEOUT: '60000'
       run: |
@@ -45,26 +42,37 @@ jobs:
           echo "Converting lecture${i}..."; \
           decktape --timeout=$DECKTAPE_TIMEOUT --load-pause 2000 \
             reveal \
-            http://localhost:9000/lecture${i}.slides.html?print-pdf \
+            https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf \
             docs/source/_static/lecture${i}.slides.pdf \
             --chrome-arg=--no-sandbox \
             --chrome-arg=--force-color-profile=srgb \
             --chrome-arg=--disable-web-security || exit 1; \
         done
 
-    - name: convert md to rst # md reference is not recognized with md_include
-      uses: docker://pandoc/core:latest
-      with:
-        args: --from=markdown --to=rst --output=docs/source/README.rst README.md
+    - name: Bundle all PDFs into a zip
+      run: |
+        ls -l docs/source/_static/*.slides.pdf || true
+        zip -j docs/source/_static/OospCpp-lectures-pdf.zip docs/source/_static/lecture*.slides.pdf
 
+    # Upload printable PDFs zip as a GitHub Release asset (no Pages needed)
+    - name: Upload printable PDFs release asset
+      uses: ncipollo/release-action@v1
+      with:
+        tag: printable-pdfs
+        name: Printable PDFs
+        allowUpdates: true
+        replacesArtifacts: true
+        artifacts: docs/source/_static/lecture*.slides.pdf,docs/source/_static/OospCpp-lectures-pdf.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Only upstream repo deploys Pages; forks won't publish gh-pages
     - name: build docs
       run: |
         sphinx-build -W -b html docs/source docs/build -j auto
 
-    - name: deploy docs only if it is pushed to main
+    - name: deploy docs (upstream main only)
       uses: peaceiris/actions-gh-pages@v3
-      # publish every time there's a push to the default branch
-      if: ${{ github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      if: ${{ github.repository_owner == 'mmoelle1' && github.ref == 'refs/heads/main' }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/build

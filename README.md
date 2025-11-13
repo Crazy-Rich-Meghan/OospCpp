@@ -56,11 +56,11 @@ https://mybinder.org/v2/gh/mmoelle1/OospCpp/binder?urlpath=git-pull%3Frepo%3Dhtt
 [pages-lecture7]: https://mmoelle1.github.io/OospCpp/_static/lecture7.slides.html
 
 [badge-pdf-lecture]: https://img.shields.io/badge/printable-pdf-blue?style=flat-square
-[pdf-lecture1]: https://mmoelle1.github.io/OospCpp/_static/lecture1.slides.pdf
-[pdf-lecture2]: https://mmoelle1.github.io/OospCpp/_static/lecture2.slides.pdf
-[pdf-lecture3]: https://mmoelle1.github.io/OospCpp/_static/lecture3.slides.pdf
-[pdf-lecture4]: https://mmoelle1.github.io/OospCpp/_static/lecture4.slides.pdf
-[pdf-lecture5]: https://mmoelle1.github.io/OospCpp/_static/lecture5.slides.pdf
-[pdf-lecture6]: https://mmoelle1.github.io/OospCpp/_static/lecture6.slides.pdf
-[pdf-lecture7]: https://mmoelle1.github.io/OospCpp/_static/lecture7.slides.pdf
+[pdf-lecture1]: https://mmoelle1.github.io/OospCpp/_static/lecture1.slides.html?print-pdf
+[pdf-lecture2]: https://mmoelle1.github.io/OospCpp/_static/lecture2.slides.html?print-pdf
+[pdf-lecture3]: https://mmoelle1.github.io/OospCpp/_static/lecture3.slides.html?print-pdf
+[pdf-lecture4]: https://mmoelle1.github.io/OospCpp/_static/lecture4.slides.html?print-pdf
+[pdf-lecture5]: https://mmoelle1.github.io/OospCpp/_static/lecture5.slides.html?print-pdf
+[pdf-lecture6]: https://mmoelle1.github.io/OospCpp/_static/lecture6.slides.html?print-pdf
+[pdf-lecture7]: https://mmoelle1.github.io/OospCpp/_static/lecture7.slides.html?print-pdf
 &copy; Copyright 2025, Matthias Möller.
