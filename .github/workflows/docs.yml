@@ -34,54 +34,41 @@ jobs:
       run: |
         mkdir -p docs/source/_static
 
-    - name: Convert upstream lecture 1 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture1.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture1.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+    - name: Install Puppeteer
+      run: |
+        npm i puppeteer@22 --no-fund --no-audit
 
-    - name: Convert upstream lecture 2 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture2.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture2.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
-
-    - name: Convert upstream lecture 3 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture3.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture3.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
-
-    - name: Convert upstream lecture 4 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture4.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture4.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
-
-    - name: Convert upstream lecture 5 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture5.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture5.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
-
-    - name: Convert upstream lecture 6 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture6.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture6.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
-
-    - name: Convert upstream lecture 7 to PDF (print view)
-      uses: fifsky/html-to-pdf-action@master
-      with:
-        url: https://mmoelle1.github.io/OospCpp/_static/lecture7.slides.html?print-pdf
-        outputFile: ./docs/source/_static/lecture7.slides.pdf
-        pdfOptions: '{"format": "A4", "landscape": true, "printBackground": true, "preferCSSPageSize": true, "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
+    - name: Render upstream print slides to PDFs (Puppeteer)
+      run: |
+        node - <<'NODE'
+        const fs = require('fs');
+        const puppeteer = require('puppeteer');
+        (async () => {
+          fs.mkdirSync('docs/source/_static', { recursive: true });
+          const browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox','--disable-setuid-sandbox','--force-color-profile=srgb','--disable-web-security']
+          });
+          for (let i = 1; i <= 7; i++) {
+            const url = `https://mmoelle1.github.io/OospCpp/_static/lecture${i}.slides.html?print-pdf`;
+            const out = `docs/source/_static/lecture${i}.slides.pdf`;
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'networkidle0', timeout: 90000 });
+            await page.waitForTimeout(2000);
+            await page.emulateMediaType('screen');
+            await page.pdf({
+              path: out,
+              landscape: true,
+              printBackground: true,
+              preferCSSPageSize: true,
+              margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' }
+            });
+            await page.close();
+            console.log('Saved', out);
+          }
+          await browser.close();
+        })().catch(e => { console.error(e); process.exit(1); });
+        NODE
 
     - name: Bundle all PDFs into a zip
       run: |
