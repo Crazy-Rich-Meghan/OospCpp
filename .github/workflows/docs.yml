@@ -77,12 +77,12 @@ jobs:
         }
         NODE
 
-    - name: Bundle all PDFs into a zip
+    - name: Obtain all PDFs into a zip
       run: |
         ls -l docs/source/_static/*.slides.pdf || true
         zip -j docs/source/_static/OospCpp-lectures-pdf.zip docs/source/_static/lecture*.slides.pdf
 
-    # Upload printable PDFs zip as a GitHub Release asset (no Pages needed)
+    # Upload printable PDFs zip as a GitHub Release asset (no Pages, better for testing in forks)
     - name: Upload printable PDFs release asset
       uses: ncipollo/release-action@v1
       with:
